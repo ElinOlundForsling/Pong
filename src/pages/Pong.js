@@ -24,6 +24,7 @@ const PongVanilla = () => {
     let context = tempCanvas.getContext('2d');
     context.fillStyle = '#181818';
     context.fillRect(0, 0, canvas.width, canvas.height);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const paddleWidth = 10;
@@ -66,25 +67,74 @@ const PongVanilla = () => {
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
+    const bgColor = '#181818';
     const tempCanvas = ref.current;
     let context = tempCanvas.getContext('2d');
-    context.fillStyle = '#181818';
+    context.fillStyle = bgColor;
     context.fillRect(0, 0, canvas.width, canvas.height);
-    // net
-    context.fillStyle = net.color;
-    context.fillRect(net.x, net.y, net.width, net.height);
 
-    context.fillStyle = user.color;
-    context.fillRect(user.x, user.y, user.width, user.height);
+    if (isActive) {
+      // net
+      context.fillStyle = net.color;
+      context.fillRect(net.x, net.y, net.width, net.height);
 
-    context.fillStyle = ai.color;
-    context.fillRect(ai.x, ai.y, ai.width, ai.height);
+      // userPaddle
+      context.fillStyle = user.color;
+      context.fillRect(user.x, user.y, user.width, user.height);
 
-    context.fillStyle = ball.color;
-    context.beginPath();
-    context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
-    context.closePath();
-    context.fill();
+      // opponentPaddle
+      context.fillStyle = ai.color;
+      context.fillRect(ai.x, ai.y, ai.width, ai.height);
+
+      // ball
+      context.fillStyle = ball.color;
+      context.beginPath();
+      context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+      context.closePath();
+      context.fill();
+    } else {
+      // net
+      context.fillStyle = bgColor;
+      context.fillRect(net.x, net.y, net.width, net.height);
+
+      // userPaddle
+      context.fillStyle = bgColor;
+      context.fillRect(user.x, user.y, user.width, user.height);
+
+      // opponentPaddle
+      context.fillStyle = bgColor;
+      context.fillRect(ai.x, ai.y, ai.width, ai.height);
+
+      // ball
+      context.fillStyle = bgColor;
+      context.beginPath();
+      context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, true);
+      context.closePath();
+      context.fill();
+
+      // rules
+      context.fillStyle = '#fff';
+      context.font = '40px Roboto, sans-serif';
+      context.textAlign = 'center';
+      context.fillText('PONG', canvas.width / 2, canvas.height / 2 - 100);
+
+      context.fillStyle = '#fff';
+      context.font = '30px Quicksand, sans-serif';
+      context.textAlign = 'center';
+      context.fillText(
+        'Use your up and down buttons to control the left paddle',
+        canvas.width / 2,
+        canvas.height / 2,
+      );
+      context.fillStyle = '#fff';
+      context.font = '30px Quicksand, sans-serif';
+      context.textAlign = 'center';
+      context.fillText(
+        'Click space to start. Godspeed!',
+        canvas.width / 2,
+        canvas.height / 2 + 50,
+      );
+    }
   }, [seconds, isActive]);
 
   const [upArrowPressed, setUpArrowPressed] = useState(false);
@@ -94,12 +144,13 @@ const PongVanilla = () => {
     event.preventDefault();
     switch (event.keyCode) {
       case 38:
-        //setPaddleV(v => v + 0.2);
         setUpArrowPressed(true);
         break;
       case 40:
-        //setPaddleV(v => v + 0.2);
         setDownArrowPressed(true);
+        break;
+      case 32:
+        toggle();
         break;
     }
   };
@@ -151,6 +202,8 @@ const PongVanilla = () => {
       ...ball,
       x: canvas.width / 2,
       y: canvas.height / 2,
+      velocityX: 5,
+      velocityY: 5,
       speed: 7,
     }));
   }
